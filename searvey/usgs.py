@@ -54,24 +54,11 @@ logger = logging.getLogger(__name__)
 # only relevant values or stations that have these parameters
 
 
-USGS_OUTPUT_OF_INTEREST = ("elevation", "flow rate")
-
 # constants
+USGS_OUTPUT_OF_INTEREST = ("elevation", "flow rate")
+USGS_OUTPUT_TYPE = ("iv",)
 USGS_RATE_LIMIT = limits.parse("5/second")
 USGS_MAX_DAYS_PER_REQUEST = 30 # WHAT IS THE ACTUAL MAX?
-USGS_STATIONS_KWARGS = [
-    {"output": "general", "skip_table_rows": 4},
-    {"output": "contacts", "skip_table_rows": 4},
-    {"output": "performance", "skip_table_rows": 8},
-]
-USGS_STATION_DATA_COLUMNS_TO_DROP = [
-    "bat",
-    "sw1",
-    "sw2",
-    "(m)",
-]
-USGS_STATION_DATA_COLUMNS = {
-}
 
 
 def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
@@ -85,13 +72,31 @@ def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
 
 
 @functools.cache
-def _get_usgs_output_codes() -> Dict[str, str]:
+def _get_usgs_output_info() -> pd.DataFrame:
 
-    output_codes = {}
+    param_info_list = []
     for var in USGS_OUTPUT_OF_INTEREST:
         df_param_cd, _ = nwis.get_pmcodes(var)
         df_param_cd = _filter_parameter_codes(df_param_cd)
-        output_codes[var] = df_param_cd.parameter_cd.values.tolist()
+        df_param_cd['output_cat'] = var
+        param_info_list.append(df_param_cd)
+
+    df_param_info = functools.reduce(
+        functools.partial(pd.merge, how='outer'), param_info_list
+    )
+
+    return df_param_info
+
+
+@functools.cache
+def _get_usgs_output_codes() -> List[str]:
+
+    output_codes = {}
+    df_param_info = _get_usgs_output_info()
+    for var in USGS_OUTPUT_OF_INTEREST:
+        output_codes[var] = df_param_info[
+            df_param_info['output_cat'] == var
+        ].parameter_cd.values.tolist()
 
     return output_codes
 
@@ -102,7 +107,10 @@ def get_usgs_stations_by_output(output: str) -> pd.DataFrame:
 
 def _get_usgs_stations_by_output(output: List[str], **kwargs) -> pd.DataFrame:
 
-    sites, sites_md = nwis.what_sites(
+    # TODO: Explore using more detailed get_info function
+#    sites, sites_md = nwis.what_sites(
+    sites, sites_md = nwis.get_info(
+        seriesCatalogOutput=True,
         parameterCd=output, 
         **kwargs
     )
@@ -133,14 +141,20 @@ def _get_all_usgs_stations() -> gpd.GeoDataFrame:
     usgs_stations_results = multiprocess(
         func=_get_usgs_stations_by_output,
         func_kwargs=[
-            {'stateCd': st, 'output': out}
-            for st, out in product(state_codes, _get_usgs_output_codes().values())
+            {'stateCd': st, 'output': out, 'hasDataType': dtp}
+            for st, out, dtp in product(
+                state_codes,
+                _get_usgs_output_codes().values(),
+                USGS_OUTPUT_TYPE,
+            )
         ]
     )
 
     usgs_stations = functools.reduce(
-        functools.partial(pd.merge, how='outer'),
-        (r.result for r in usgs_stations_results)
+#        functools.partial(pd.merge, how='outer'),
+        lambda i, j: pd.concat([i, j], ignore_index=True),
+        (r.result for r in usgs_stations_results if not r.result.empty)
+        
     )
     usgs_stations = normalize_usgs_stations(usgs_stations)
 
@@ -160,13 +174,16 @@ def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
     usgs_stations_results = multiprocess(
         func=_get_usgs_stations_by_output,
         func_kwargs=[
-            {'bBox': bBox, 'output': out}
-            for out in _get_usgs_output_codes().values()
+            {'bBox': bBox, 'output': out, 'hasDataType': dtp}
+            for out, dtp in product(
+                _get_usgs_output_codes().values(), USGS_OUTPUT_TYPE
+            )
         ]
     )
     usgs_stations = functools.reduce(
-        functools.partial(pd.merge, how='outer'),
-        (r.result for r in usgs_stations_results)
+#        functools.partial(pd.merge, how='outer'),
+        lambda i, j: pd.concat([i, j], ignore_index=True),
+        (r.result for r in usgs_stations_results if not r.result.empty)
     )
     usgs_stations = normalize_usgs_stations(usgs_stations)
 
@@ -220,20 +237,31 @@ def get_usgs_stations(
 
 
 def normalize_usgs_station_data(usgs_code: str, df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
-    # Each station may have more than one sensors.
-    # Some of the sensors have nothing to do with sea level height. We drop these sensors
-    df = df.rename(columns=IOC_STATION_DATA_COLUMNS)
-    logger.debug("%s: df contains the following columns: %s", usgs_code, df.columns)
-    df = df.drop(columns=IOC_STATION_DATA_COLUMNS_TO_DROP, errors="ignore")
-    if len(df.columns) == 1:
-        # all the data columns have been dropped!
-        msg = f"{usgs_code}: The table does not contain any sensor data!"
-        logger.info(msg)
-        raise ValueError(msg)
-    df = df.assign(
-        usgs_code=usgs_code,
-        time=pd.to_datetime(df.time),
-    )
+
+    df = df.reset_index().set_index(['datetime', 'site_no'])
+    df = df.melt(ignore_index=False, var_name='output_id')
+#    df['output_id'] = df['output_id'].str.removesuffix('_cd')
+    df['code'] = df.output_id.transform(lambda i: i.split('_')[0])
+    df['option'] = df.output_id.transform(lambda i: ''.join(i.removesuffix('_cd').split('_')[1:]))
+    df['qualifier'] = df.value.where(df.output_id.str.contains('_cd'))
+    df['value'] = df.value.where(~df.output_id.str.contains('_cd'))
+
+    df['isqual'] = df.output_id.str.contains('_cd')
+    df['output_id'] = df.output_id.str.removesuffix('_cd')
+    df = pd.merge(
+        df.drop(columns='qualifier')[~df.isqual],
+        df.qualifier[df.isqual],
+        left_index=True,
+        right_index=True,
+        how='left'
+    ).drop_duplicates().drop(columns=['output_id', 'isqual'])
+
+
+    df_parm = _get_usgs_output_info().set_index('parameter_cd')
+    df = df[df.code.isin(df_parm.index)]
+    df['unit'] = df_parm.parm_unit[df.code.values].values
+    df['name'] = df_parm.parm_nm[df.code.values].values
+
     if truncate_seconds:
         # Truncate seconds from timestamps: https://stackoverflow.com/a/28783971/592289
         # WARNING: This can potentially lead to duplicates!
@@ -255,25 +283,28 @@ def get_usgs_station_data(
 ) -> pd.DataFrame:
     """Retrieve the TimeSeries of a single IOC station."""
 
-    # TODO: Code can be a list for USGS -- ALSO limit on list length,
-    # maybe 20/25?
+    if period > USGS_MAX_DAYS_PER_REQUEST:
+        msg = (
+            f"Unsupported period. Please choose a period smaller than {USGS_MAX_DAYS_PER_REQUEST}: {period}"
+        )
+        raise ValueError(msg)
+
     if rate_limit:
         while rate_limit.reached(identifier="IOC"):
             wait()
 
-    endtime = pd.to_datetime(endtime).date().isoformat()
-    url = IOC_BASE_URL.format(usgs_code=usgs_code, endtime=endtime, period=period)
-    logger.info("%s: Retrieving data from: %s", usgs_code, url)
-    try:
-        df = pd.read_html(url, header=0)[0]
-    except ValueError as exc:
-        if str(exc) == "No tables found":
-            logger.info("%s: No data", usgs_code)
-        else:
-            logger.exception("%s: Something went wrong", usgs_code)
-        raise
-    df = normalize_usgs_station_data(usgs_code=usgs_code, df=df, truncate_seconds=truncate_seconds)
-    return df
+    if isinstance(endtime, str):
+        endtime = datetime.date.fromisoformat(endtime)
+    starttime = endtime - datetime.timedelta(days=period)
+    df_iv, _ = nwis.get_iv(
+        sites=[usgs_code],
+        start=starttime.isoformat(),
+        end=endtime.isoformat()
+    )
+    df_iv = normalize_usgs_station_data(
+            usgs_code=usgs_code, df=df_iv, truncate_seconds=truncate_seconds
+        )
+    return df_iv
 
 
 def get_usgs_data(
@@ -324,36 +355,50 @@ def get_usgs_data(
         )
         raise ValueError(msg)
 
+    if rate_limit:
+        while rate_limit.reached(identifier="IOC"):
+            wait()
+
+    if isinstance(endtime, str):
+        endtime = datetime.date.fromisoformat(endtime)
+    starttime = endtime - datetime.timedelta(days=period)
+
     func_kwargs = []
-    for usgs_code in usgs_metadata.usgs_code:
+    usgs_sites = usgs_metadata.site_no.unique().values
+    chunk_size = 30
+    n_chunks = len(usgs_sites) // chunk_size + 1
+    usgs_chunks = np.array_split(usgs_sites, n_chunks)
+    for usgs_code_ary in usgs_chunks:
         func_kwargs.append(
             dict(
-                period=period,
-                endtime=endtime,
-                usgs_code=usgs_code,
-                rate_limit=rate_limit,
-                truncate_seconds=truncate_seconds,
+                sites=usgs_code_ary.tolist(),
+                start=starttime.isoformat(),
+                end=endtime.isoformat()
             ),
         )
 
     results = multithread(
-        func=get_usgs_station_data,
+        func=nwis.get_iv,
         func_kwargs=func_kwargs,
         n_workers=5,
         print_exceptions=False,
         disable_progress_bar=disable_progress_bar,
     )
 
+
     datasets = []
     for result in results:
         if result.result is not None:
             df = result.result
-            meta = usgs_metadata[usgs_metadata.usgs_code == result.kwargs["usgs_code"]]  # type: ignore[index]
-            ds = df.set_index(["usgs_code", "time"]).to_xarray()
-            ds["lon"] = ("usgs_code", meta.lon)
-            ds["lat"] = ("usgs_code", meta.lat)
-            ds["country"] = ("usgs_code", meta.country)
-            ds["location"] = ("usgs_code", meta.location)
+            df = normalize_usgs_station_data(
+                usgs_code=usgs_code, df=df, truncate_seconds=truncate_seconds
+            )
+            meta = usgs_metadata[usgs_metadata.site_no == result.kwargs["site_no"]]  # type: ignore[index]
+            ds = df.set_index(["datetime", "site_no"]).to_xarray()
+            ds["lon"] = ("usgs_code", meta.dec_long_va)
+            ds["lat"] = ("usgs_code", meta.dec_lat_va)
+#            ds["country"] = ("usgs_code", meta.country)
+#            ds["location"] = ("usgs_code", meta.location)
             datasets.append(ds)
 
     # in order to keep memory consumption low, let's group the datasets
