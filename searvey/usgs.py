@@ -25,6 +25,7 @@ from itertools import product
 
 import geopandas as gpd
 import limits
+import numpy as np
 import pandas as pd
 import xarray as xr
 from dataretrieval import nwis
@@ -59,6 +60,8 @@ USGS_OUTPUT_OF_INTEREST = ("elevation", "flow rate")
 USGS_OUTPUT_TYPE = ("iv",)
 USGS_RATE_LIMIT = limits.parse("5/second")
 USGS_MAX_DAYS_PER_REQUEST = 30 # WHAT IS THE ACTUAL MAX?
+# TODO: Should qualifier be a part of the index?
+USGS_DATA_MULTIIDX = ('site_no', 'datetime', 'code', 'option')
 
 
 def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
@@ -109,6 +112,7 @@ def _get_usgs_stations_by_output(output: List[str], **kwargs) -> pd.DataFrame:
 
     # TODO: Explore using more detailed get_info function
 #    sites, sites_md = nwis.what_sites(
+    # NOTE: Why do we have so many combinations in df for a single station?
     sites, sites_md = nwis.get_info(
         seriesCatalogOutput=True,
         parameterCd=output, 
@@ -150,6 +154,7 @@ def _get_all_usgs_stations() -> gpd.GeoDataFrame:
         ]
     )
 
+    # TODO: `dataretrieval` is going to throw exception if empty in the future
     usgs_stations = functools.reduce(
 #        functools.partial(pd.merge, how='outer'),
         lambda i, j: pd.concat([i, j], ignore_index=True),
@@ -180,6 +185,8 @@ def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
             )
         ]
     )
+    # TODO: `dataretrieval` is going to throw exception if empty in the future
+    # TODO: Guard for reduce on empty total list of stations
     usgs_stations = functools.reduce(
 #        functools.partial(pd.merge, how='outer'),
         lambda i, j: pd.concat([i, j], ignore_index=True),
@@ -236,18 +243,21 @@ def get_usgs_stations(
     return usgs_stations
 
 
-def normalize_usgs_station_data(usgs_code: str, df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
+def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
 
-    df = df.reset_index().set_index(['datetime', 'site_no'])
-    df = df.melt(ignore_index=False, var_name='output_id')
-#    df['output_id'] = df['output_id'].str.removesuffix('_cd')
-    df['code'] = df.output_id.transform(lambda i: i.split('_')[0])
-    df['option'] = df.output_id.transform(lambda i: ''.join(i.removesuffix('_cd').split('_')[1:]))
+    df = df.reset_index()
+    df = df.melt(id_vars=['datetime', 'site_no'], var_name='output_id')
+
     df['qualifier'] = df.value.where(df.output_id.str.contains('_cd'))
     df['value'] = df.value.where(~df.output_id.str.contains('_cd'))
+    df = df.dropna(subset=['value', 'qualifier'], how='all')
 
+    df['code'] = df.output_id.transform(lambda i: i.split('_')[0])
+    df['option'] = df.output_id.transform(lambda i: ''.join(i.removesuffix('_cd').split('_')[1:]))
     df['isqual'] = df.output_id.str.contains('_cd')
     df['output_id'] = df.output_id.str.removesuffix('_cd')
+    df = df.set_index(list(USGS_DATA_MULTIIDX))
+
     df = pd.merge(
         df.drop(columns='qualifier')[~df.isqual],
         df.qualifier[df.isqual],
@@ -255,6 +265,7 @@ def normalize_usgs_station_data(usgs_code: str, df: pd.DataFrame, truncate_secon
         right_index=True,
         how='left'
     ).drop_duplicates().drop(columns=['output_id', 'isqual'])
+    df = df.reset_index()
 
 
     df_parm = _get_usgs_output_info().set_index('parameter_cd')
@@ -265,12 +276,18 @@ def normalize_usgs_station_data(usgs_code: str, df: pd.DataFrame, truncate_secon
     if truncate_seconds:
         # Truncate seconds from timestamps: https://stackoverflow.com/a/28783971/592289
         # WARNING: This can potentially lead to duplicates!
-        df = df.assign(time=df.time.dt.floor("min"))
-        if df.time.duplicated().any():
+        df = df.assign(datetime=df.datetime.dt.floor("min"))
+        if df.datetime.duplicated().any():
             # There are duplicates. Keep the first datapoint per minute.
-            msg = f"{usgs_code}: Duplicate timestamps have been detected after the truncation of seconds. Keeping the first datapoint per minute"
+            msg = f"Duplicate timestamps have been detected after the truncation of seconds. Keeping the first datapoint per minute"
             warnings.warn(msg)
-            df = df.iloc[df.time.drop_duplicates().index].reset_index(drop=True)
+            df = df.drop_duplicates(
+                subset=list(USGS_DATA_MULTIIDX)
+            ).reset_index(drop=True)
+
+#    df = df.dropna(subset='value')
+    df = df.set_index(list(USGS_DATA_MULTIIDX))
+
     return df
 
 
@@ -364,7 +381,7 @@ def get_usgs_data(
     starttime = endtime - datetime.timedelta(days=period)
 
     func_kwargs = []
-    usgs_sites = usgs_metadata.site_no.unique().values
+    usgs_sites = usgs_metadata.site_no.unique()
     chunk_size = 30
     n_chunks = len(usgs_sites) // chunk_size + 1
     usgs_chunks = np.array_split(usgs_sites, n_chunks)
@@ -389,16 +406,24 @@ def get_usgs_data(
     datasets = []
     for result in results:
         if result.result is not None:
-            df = result.result
-            df = normalize_usgs_station_data(
-                usgs_code=usgs_code, df=df, truncate_seconds=truncate_seconds
+            df_iv, _ = result.result
+            df_iv = df_iv.reset_index()
+            df_iv = normalize_usgs_station_data(
+                df=df_iv, truncate_seconds=truncate_seconds
             )
-            meta = usgs_metadata[usgs_metadata.site_no == result.kwargs["site_no"]]  # type: ignore[index]
-            ds = df.set_index(["datetime", "site_no"]).to_xarray()
-            ds["lon"] = ("usgs_code", meta.dec_long_va)
-            ds["lat"] = ("usgs_code", meta.dec_lat_va)
-#            ds["country"] = ("usgs_code", meta.country)
-#            ds["location"] = ("usgs_code", meta.location)
+            st_meta = usgs_metadata.set_index(
+                    'site_no'
+                ).loc[df_iv.reset_index().site_no.unique()].reset_index().drop_duplicates(
+                    subset='site_no'
+                ).set_index('site_no')
+            pr_meta = df_iv.reset_index()[['code', 'unit', 'name']].drop_duplicates().set_index('code')
+            ds = df_iv.drop(columns=['unit', 'name']).to_xarray()
+            ds["lon"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_long_va)
+            ds["lat"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_lat_va)
+            ds["unit"] = ("code", pr_meta.loc[ds.code.values.tolist()].unit)
+            ds["name"] = ("code", pr_meta.loc[ds.code.values.tolist()].name)
+#            ds["country"] = ("site_no", st_meta.country)
+#            ds["location"] = ("site_no", st_meta.location)
             datasets.append(ds)
 
     # in order to keep memory consumption low, let's group the datasets
