@@ -50,7 +50,6 @@ logger = logging.getLogger(__name__)
 USGS_OUTPUT_OF_INTEREST = ("elevation", "flow rate")
 USGS_OUTPUT_TYPE = ("iv",)
 USGS_RATE_LIMIT = limits.parse("5/second")
-USGS_MAX_DAYS_PER_REQUEST = 30  # WHAT IS THE ACTUAL MAX?
 # TODO: Should qualifier be a part of the index?
 USGS_DATA_MULTIIDX = ("site_no", "datetime", "code", "option")
 
@@ -265,7 +264,7 @@ def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.
 def get_usgs_station_data(
     usgs_code: str,
     endtime: Union[str, datetime.date] = datetime.date.today(),
-    period: float = USGS_MAX_DAYS_PER_REQUEST,
+    period: float = 30,
     truncate_seconds: bool = True,
     rate_limit: Optional[RateLimit] = None,
 ) -> pd.DataFrame:
@@ -278,13 +277,6 @@ def get_usgs_station_data(
     :param rate_limit: The default rate limit is 5 requests/second.
     :return: ``pandas.DataFrame`` with the a single station measurements
     """
-
-    # TODO: Teset the actual max for USGS
-    if period > USGS_MAX_DAYS_PER_REQUEST:
-        msg = (
-            f"Unsupported period. Please choose a period smaller than {USGS_MAX_DAYS_PER_REQUEST}: {period}"
-        )
-        raise ValueError(msg)
 
     if rate_limit:
         while rate_limit.reached(identifier="USGS"):
@@ -340,12 +332,6 @@ def get_usgs_data(
     :param disable_progress_bar: If ``True`` then the progress bar is not displayed.
     :return: ``xr.Dataset`` of station measurements
     """
-    if period > USGS_MAX_DAYS_PER_REQUEST:
-        msg = (
-            f"Unsupported period. Please choose a period smaller than {USGS_MAX_DAYS_PER_REQUEST}: {period}"
-        )
-        raise ValueError(msg)
-
     if rate_limit:
         while rate_limit.reached(identifier="USGS"):
             wait()
