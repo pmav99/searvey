@@ -52,6 +52,17 @@ USGS_OUTPUT_TYPE = ("iv",)
 USGS_RATE_LIMIT = limits.parse("5/second")
 # TODO: Should qualifier be a part of the index?
 USGS_DATA_MULTIIDX = ("site_no", "datetime", "code", "option")
+USGS_STATIONS_COLUMN_NAMES = [
+    "site_no",
+    "station_nm",
+    "dec_lat_va",
+    "dec_long_va",
+    "dec_coord_datum_cd",
+    "alt_va",
+    "alt_datum_cd",
+    "begin_date",
+    "end_date",
+]
 
 
 def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
@@ -250,7 +261,7 @@ def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.
         # Truncate seconds from timestamps: https://stackoverflow.com/a/28783971/592289
         # WARNING: This can potentially lead to duplicates!
         df = df.assign(datetime=df.datetime.dt.floor("min"))
-        if df.datetime.duplicated().any():
+        if df.duplicated(subset=list(USGS_DATA_MULTIIDX)).any():
             # There are duplicates. Keep the first datapoint per minute.
             msg = f"Duplicate timestamps have been detected after the truncation of seconds. Keeping the first datapoint per minute"
             warnings.warn(msg)
