@@ -109,7 +109,7 @@ def normalize_usgs_stations(df: pd.DataFrame) -> gpd.GeoDataFrame:
 @functools.cache
 def _get_all_usgs_stations() -> gpd.GeoDataFrame:
     """
-    Return USGS station metadata
+    Return USGS station metadata for all stations in all the states
 
     :return: ``geopandas.GeoDataFrame`` with the station metadata
     """
@@ -138,6 +138,11 @@ def _get_all_usgs_stations() -> gpd.GeoDataFrame:
 
 @functools.cache
 def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
+    """
+    Return USGS station metadata for all stations in the specified region
+
+    :return: ``geopandas.GeoDataFrame`` with the station metadata
+    """
 
     region = shape(region_json)
 
@@ -173,10 +178,10 @@ def get_usgs_stations(
     lat_max: Optional[float] = None,
 ) -> gpd.GeoDataFrame:
     """
-    Return USGS station metadata from: http://www.ioc-sealevelmonitoring.org/list.php?showall=all
+    Return USGS station metadata from: https://waterservices.usgs.gov/rest/Site-Service.html
 
     If `region` is defined then the stations that are outside of the region are
-    filtered out.. If the coordinates of the Bounding Box are defined then
+    filtered out. If the coordinates of the Bounding Box are defined then
     stations outside of the BBox are filtered out. If both ``region`` and the
     Bounding Box are defined, then an exception is raised.
 
@@ -187,7 +192,7 @@ def get_usgs_stations(
     :param lon_max: The maximum Longitude of the Bounding Box.
     :param lat_min: The minimum Latitude of the Bounding Box.
     :param lat_max: The maximum Latitude of the Bounding Box.
-    :return: ``pandas.DataFrame`` with the station metadata
+    :return: ``geopandas.GeoDataFrame`` with the station metadata
     """
     region = get_region(
         region=region,
@@ -264,7 +269,15 @@ def get_usgs_station_data(
     truncate_seconds: bool = True,
     rate_limit: Optional[RateLimit] = None,
 ) -> pd.DataFrame:
-    """Retrieve the TimeSeries of a single USGS station."""
+    """Retrieve the TimeSeries of a single USGS station.
+
+    :param usgs_code: USGS station code a.k.a. "site number"
+    :param endtime: The end date for the measurement data for fetch
+    :param period: Number of date for which to fetch station data
+    :param truncate_seconds: If ``True`` then timestamps are truncated to minutes (seconds are dropped)
+    :param rate_limit: The default rate limit is 5 requests/second.
+    :return: ``pandas.DataFrame`` with the a single station measurements
+    """
 
     # TODO: Teset the actual max for USGS
     if period > USGS_MAX_DAYS_PER_REQUEST:
@@ -325,7 +338,7 @@ def get_usgs_data(
     :param truncate_seconds: If ``True`` then timestamps are truncated to minutes (seconds are dropped)
     :param rate_limit: The default rate limit is 5 requests/second.
     :param disable_progress_bar: If ``True`` then the progress bar is not displayed.
-
+    :return: ``xr.Dataset`` of station measurements
     """
     if period > USGS_MAX_DAYS_PER_REQUEST:
         msg = (
