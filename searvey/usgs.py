@@ -226,6 +226,8 @@ def get_usgs_stations(
 
 def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
 
+    # TODO: Does truncate seconds make sense for USGS?
+
     df = df.reset_index()
     df = df.melt(id_vars=["datetime", "site_no"], var_name="output_id")
 
