@@ -281,7 +281,7 @@ def get_usgs_station_data(
         endtime = datetime.date.fromisoformat(endtime)
     starttime = endtime - datetime.timedelta(days=period)
     df_iv, _ = nwis.get_iv(sites=[usgs_code], start=starttime.isoformat(), end=endtime.isoformat())
-    df_iv = normalize_usgs_station_data(usgs_code=usgs_code, df=df_iv, truncate_seconds=truncate_seconds)
+    df_iv = normalize_usgs_station_data(df=df_iv, truncate_seconds=truncate_seconds)
     return df_iv
 
 
