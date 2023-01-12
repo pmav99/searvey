@@ -60,18 +60,20 @@ def test_get_usgs_station_data(truncate_seconds, no_records):
 
 _USGS_METADATA_MINIMAL = pd.DataFrame.from_dict(
     {
-        'agency_cd': {0: 'USGS', 1: 'USGS'},
-        'alt_datum_cd': {0: 'NAVD88', 1: 'NAVD88'},
-        'alt_va': {0: 0.0, 1: 0.0},
-        'begin_date': {0: '2022-09-26', 1: '2022-09-27'},
-        'dec_coord_datum_cd': {0: 'NAD83', 1: 'NAD83'},
-        'dec_lat_va': {0: 27.97775, 1: 30.18655556},
-        'dec_long_va': {0: -82.8322778, 1: -85.8339722},
-        'end_date': {0: '2022-10-03', 1: '2022-10-04'},
-        'parm_cd': {0: '62622', 1: '62622'},
-        'site_no': {0: '275840082495601', 1: '301112085500201'},
-        'station_nm': {0: 'GULF OF MEXICO AT CLEARWATER BEACH, FL',
-                       1: 'GULF OF MEXICO NEAR PANAMA CITY BEACH, FL'},
+        "agency_cd": {0: "USGS", 1: "USGS"},
+        "alt_datum_cd": {0: "NAVD88", 1: "NAVD88"},
+        "alt_va": {0: 0.0, 1: 0.0},
+        "begin_date": {0: "2022-09-26", 1: "2022-09-27"},
+        "dec_coord_datum_cd": {0: "NAD83", 1: "NAD83"},
+        "dec_lat_va": {0: 27.97775, 1: 30.18655556},
+        "dec_long_va": {0: -82.8322778, 1: -85.8339722},
+        "end_date": {0: "2022-10-03", 1: "2022-10-04"},
+        "parm_cd": {0: "62622", 1: "62622"},
+        "site_no": {0: "275840082495601", 1: "301112085500201"},
+        "station_nm": {
+            0: "GULF OF MEXICO AT CLEARWATER BEACH, FL",
+            1: "GULF OF MEXICO NEAR PANAMA CITY BEACH, FL",
+        },
     }
 )
 
