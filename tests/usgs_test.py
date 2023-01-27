@@ -36,7 +36,7 @@ def test_get_usgs_stations():
     assert isinstance(stations, gpd.GeoDataFrame)
     assert len(stations) > 242000
     # check that the DataFrame has the right columns
-    assert assert set(df.columns).issuperset(usgs.USGS_STATIONS_COLUMN_NAMES)
+    assert set(stations.columns).issuperset(usgs.USGS_STATIONS_COLUMN_NAMES)
 
 
 @pytest.mark.vcr

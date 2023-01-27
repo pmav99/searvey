@@ -158,14 +158,14 @@ def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
 
     region = shape(region_json)
 
-    bBox = list(region.bounds)
-    if (bBox[2] - bBox[0]) * (bBox[3] - bBox[1]) > 25:
+    bbox = list(region.bounds)
+    if (bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) > 25:
         raise ValueError("Product of lat range and lon range cannot exceed 25!")
 
     usgs_stations_results = multiprocess(
         func=_get_usgs_stations_by_output,
         func_kwargs=[
-            {"bBox": bBox, "output": out, "hasDataType": dtp}
+            {"bBox": bbox, "output": out, "hasDataType": dtp}
             for out, dtp in product(_get_usgs_output_codes().values(), USGS_OUTPUT_TYPE)
         ],
     )
@@ -267,7 +267,7 @@ def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.
         df = df.assign(datetime=df.datetime.dt.floor("min"))
         if df.duplicated(subset=list(USGS_DATA_MULTIIDX)).any():
             # There are duplicates. Keep the first datapoint per minute.
-            msg = f"Duplicate timestamps have been detected after the truncation of seconds. Keeping the first datapoint per minute"
+            msg = "Duplicate timestamps have been detected after the truncation of seconds. Keeping the first datapoint per minute"
             warnings.warn(msg)
             df = df.drop_duplicates(subset=list(USGS_DATA_MULTIIDX)).reset_index(drop=True)
 
@@ -305,7 +305,9 @@ def get_usgs_station_data(
     return df_iv
 
 
-def _get_dataset_from_query_results(query_result: Tuple[pd.DataFrame, Metadata]) -> xr.Dataset:
+def _get_dataset_from_query_results(
+    query_result: Tuple[pd.DataFrame, Metadata], usgs_metadata: pd.DataFrame, truncate_seconds: bool
+) -> xr.Dataset:
     df_iv, _ = query_result
     df_iv = df_iv.reset_index()
     df_iv = normalize_usgs_station_data(df=df_iv, truncate_seconds=truncate_seconds)
@@ -326,6 +328,7 @@ def _get_dataset_from_query_results(query_result: Tuple[pd.DataFrame, Metadata])
     # ds["location"] = ("site_no", st_meta.location)
 
     return ds
+
 
 def get_usgs_data(
     usgs_metadata: pd.DataFrame,
@@ -396,12 +399,12 @@ def get_usgs_data(
 
     datasets = []
     for result in results:
-        if result.result is not None:
+        if result.result is None:
             # When the `get_iv` call on station results in exception
             # in `data_retrieval` due to non-existant data
             continue
 
-        ds = _get_dataset_from_query_results(result.result)
+        ds = _get_dataset_from_query_results(result.result, usgs_metadata, truncate_seconds)
         datasets.append(ds)
 
     # in order to keep memory consumption low, let's group the datasets
