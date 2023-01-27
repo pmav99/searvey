@@ -75,7 +75,7 @@ def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
     return param_cd_df
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _get_usgs_output_info() -> pd.DataFrame:
 
     output_info = []
@@ -90,7 +90,7 @@ def _get_usgs_output_info() -> pd.DataFrame:
     return df_param_info
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _get_usgs_output_codes() -> Dict[str, pd.DataFrame]:
 
     output_codes = {}
@@ -118,7 +118,7 @@ def normalize_usgs_stations(df: pd.DataFrame) -> gpd.GeoDataFrame:
     return gdf
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _get_all_usgs_stations() -> gpd.GeoDataFrame:
     """
     Return USGS station metadata for all stations in all the states
@@ -148,7 +148,7 @@ def _get_all_usgs_stations() -> gpd.GeoDataFrame:
     return usgs_stations
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
     """
     Return USGS station metadata for all stations in the specified region
