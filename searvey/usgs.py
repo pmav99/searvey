@@ -20,6 +20,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 from itertools import product
 
@@ -30,6 +31,7 @@ import pandas as pd
 import xarray as xr
 from dataretrieval import nwis
 from dataretrieval.codes import state_codes
+from dataretrieval.utils import Metadata
 from shapely.geometry import MultiPolygon
 from shapely.geometry import Polygon
 from shapely.geometry import mapping
@@ -76,20 +78,20 @@ def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
 @functools.cache
 def _get_usgs_output_info() -> pd.DataFrame:
 
-    param_info_list = []
+    output_info = []
     for var in USGS_OUTPUT_OF_INTEREST:
         df_param_cd, _ = nwis.get_pmcodes(var)
         df_param_cd = _filter_parameter_codes(df_param_cd)
         df_param_cd["output_cat"] = var
-        param_info_list.append(df_param_cd)
+        output_info.append(df_param_cd)
 
-    df_param_info = functools.reduce(functools.partial(pd.merge, how="outer"), param_info_list)
+    df_param_info = functools.reduce(functools.partial(pd.merge, how="outer"), output_info)
 
     return df_param_info
 
 
 @functools.cache
-def _get_usgs_output_codes() -> List[str]:
+def _get_usgs_output_codes() -> Dict[str, pd.DataFrame]:
 
     output_codes = {}
     df_param_info = _get_usgs_output_info()
@@ -99,7 +101,7 @@ def _get_usgs_output_codes() -> List[str]:
     return output_codes
 
 
-def _get_usgs_stations_by_output(output: List[str], **kwargs) -> pd.DataFrame:
+def _get_usgs_stations_by_output(output: List[str], **kwargs: Dict[str, Any]) -> pd.DataFrame:
 
     # NOTE: Why do we have so many combinations in df for a single station?
     sites, sites_md = nwis.get_info(seriesCatalogOutput=True, parameterCd=output, **kwargs)
@@ -303,6 +305,28 @@ def get_usgs_station_data(
     return df_iv
 
 
+def _get_dataset_from_query_results(query_result: Tuple[pd.DataFrame, Metadata]) -> xr.Dataset:
+    df_iv, _ = query_result
+    df_iv = df_iv.reset_index()
+    df_iv = normalize_usgs_station_data(df=df_iv, truncate_seconds=truncate_seconds)
+    st_meta = (
+        usgs_metadata.set_index("site_no")
+        .loc[df_iv.reset_index().site_no.unique()]
+        .reset_index()
+        .drop_duplicates(subset="site_no")
+        .set_index("site_no")
+    )
+    pr_meta = df_iv.reset_index()[["code", "unit", "name"]].drop_duplicates().set_index("code")
+    ds = df_iv.drop(columns=["unit", "name"]).to_xarray()
+    ds["lon"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_long_va)
+    ds["lat"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_lat_va)
+    ds["unit"] = ("code", pr_meta.loc[ds.code.values.tolist()].unit)
+    ds["name"] = ("code", pr_meta.loc[ds.code.values.tolist()].name)
+    # ds["country"] = ("site_no", st_meta.country)
+    # ds["location"] = ("site_no", st_meta.location)
+
+    return ds
+
 def get_usgs_data(
     usgs_metadata: pd.DataFrame,
     endtime: Union[str, datetime.date] = datetime.date.today(),
@@ -357,8 +381,7 @@ def get_usgs_data(
     usgs_sites = usgs_metadata.site_no.unique()
     chunk_size = 30
     n_chunks = len(usgs_sites) // chunk_size + 1
-    usgs_chunks = np.array_split(usgs_sites, n_chunks)
-    for usgs_code_ary in usgs_chunks:
+    for usgs_code_ary in np.array_split(usgs_sites, n_chunks):
         func_kwargs.append(
             dict(sites=usgs_code_ary.tolist(), start=starttime.isoformat(), end=endtime.isoformat()),
         )
@@ -374,25 +397,12 @@ def get_usgs_data(
     datasets = []
     for result in results:
         if result.result is not None:
-            df_iv, _ = result.result
-            df_iv = df_iv.reset_index()
-            df_iv = normalize_usgs_station_data(df=df_iv, truncate_seconds=truncate_seconds)
-            st_meta = (
-                usgs_metadata.set_index("site_no")
-                .loc[df_iv.reset_index().site_no.unique()]
-                .reset_index()
-                .drop_duplicates(subset="site_no")
-                .set_index("site_no")
-            )
-            pr_meta = df_iv.reset_index()[["code", "unit", "name"]].drop_duplicates().set_index("code")
-            ds = df_iv.drop(columns=["unit", "name"]).to_xarray()
-            ds["lon"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_long_va)
-            ds["lat"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_lat_va)
-            ds["unit"] = ("code", pr_meta.loc[ds.code.values.tolist()].unit)
-            ds["name"] = ("code", pr_meta.loc[ds.code.values.tolist()].name)
-            # ds["country"] = ("site_no", st_meta.country)
-            # ds["location"] = ("site_no", st_meta.location)
-            datasets.append(ds)
+            # When the `get_iv` call on station results in exception
+            # in `data_retrieval` due to non-existant data
+            continue
+
+        ds = _get_dataset_from_query_results(result.result)
+        datasets.append(ds)
 
     # in order to keep memory consumption low, let's group the datasets
     # and merge them in batches

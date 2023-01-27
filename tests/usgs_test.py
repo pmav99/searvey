@@ -10,14 +10,14 @@ from shapely import geometry
 from searvey import usgs
 
 
-def test_get_usgs_stations_exception():
+def test_get_usgs_stations_raises_when_both_region_and_bbox_specified():
     lon_min = -76
     lat_min = 39
     lon_max = -70
     lat_max = 43
     geom = geometry.box(lon_min, lat_min, lon_max, lat_max)
 
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError) as exc:
         usgs.get_usgs_stations(
             region=geom,
             lon_min=lon_min,
@@ -25,6 +25,8 @@ def test_get_usgs_stations_exception():
             lon_max=lon_max,
             lat_max=lat_max,
         )
+
+    assert "`region` or the `BBox` corners, not both" in str(exc)
 
 
 @pytest.mark.vcr
@@ -34,9 +36,7 @@ def test_get_usgs_stations():
     assert isinstance(stations, gpd.GeoDataFrame)
     assert len(stations) > 242000
     # check that the DataFrame has the right columns
-    df_columns = {col for col in stations.columns}
-    expected_columns = {col for col in usgs.USGS_STATIONS_COLUMN_NAMES}
-    assert df_columns.issuperset(expected_columns)
+    assert assert set(df.columns).issuperset(usgs.USGS_STATIONS_COLUMN_NAMES)
 
 
 @pytest.mark.vcr
