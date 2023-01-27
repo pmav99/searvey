@@ -320,6 +320,7 @@ def _get_dataset_from_query_results(
     )
     pr_meta = df_iv.reset_index()[["code", "unit", "name"]].drop_duplicates().set_index("code")
     ds = df_iv.drop(columns=["unit", "name"]).to_xarray()
+    ds["datetime"] = pd.DatetimeIndex(ds["datetime"].values)
     ds["lon"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_long_va)
     ds["lat"] = ("site_no", st_meta.loc[ds.site_no.values.tolist()].dec_lat_va)
     ds["unit"] = ("code", pr_meta.loc[ds.code.values.tolist()].unit)
