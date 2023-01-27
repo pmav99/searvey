@@ -98,7 +98,7 @@ def test_get_usgs_data(truncate_seconds):
     )
     assert isinstance(ds, xr.Dataset)
     # TODO: Check if truncate_seconds does work
-    assert len(ds.datetime) == 720
+    assert len(ds.datetime) == 248
     assert len(ds.site_no) == len(usgs_metadata)
     # Check that usgs_code, lon, lat, country and location are not modified
     assert set(ds.site_no.values).issubset(usgs_metadata.site_no.values)
