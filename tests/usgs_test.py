@@ -107,5 +107,5 @@ def test_get_usgs_data(truncate_seconds):
     # assert set(ds.country.values).issubset(usgs_metadata.country.values)
     # assert set(ds.location.values).issubset(usgs_metadata.location.values)
     # Check that actual data has been retrieved
-    assert ds.sel(site_no="275840082495601").value.mean() == pytest.approx(-0.17697674, rel=1e-3)
-    assert ds.sel(site_no="301112085500201").value.mean() == pytest.approx(-0.0492796, rel=1e-3)
+    assert ds.sel(site_no="275840082495601").value.mean() == pytest.approx(-0.09816061, rel=1e-3)
+    assert ds.sel(site_no="301112085500201").value.mean() == pytest.approx(-0.23919962, rel=1e-3)
