@@ -9,20 +9,19 @@ This pacakge is a think wrapper around NWIS _REST API:
 
 We take the return values from `dataretrieval` to be the original data
 """
-
 from __future__ import annotations
 
 import datetime
 import functools
 import logging
 import warnings
+from itertools import product
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
-from itertools import product
 
 import geopandas as gpd
 import limits
@@ -32,9 +31,9 @@ import xarray as xr
 from dataretrieval import nwis
 from dataretrieval.codes import state_codes
 from dataretrieval.utils import Metadata
+from shapely.geometry import mapping
 from shapely.geometry import MultiPolygon
 from shapely.geometry import Polygon
-from shapely.geometry import mapping
 from shapely.geometry import shape
 
 from .multi import multiprocess
