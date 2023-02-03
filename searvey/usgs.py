@@ -67,7 +67,6 @@ USGS_STATIONS_COLUMN_NAMES = [
 
 
 def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
-
     # Should we filter based on units?
     param_cd_df = param_cd_df[(param_cd_df.group == "Physical")]
 
@@ -76,7 +75,6 @@ def _filter_parameter_codes(param_cd_df: pd.DataFrame) -> pd.DataFrame:
 
 @functools.lru_cache(maxsize=None)
 def _get_usgs_output_info() -> pd.DataFrame:
-
     output_info = []
     for var in USGS_OUTPUT_OF_INTEREST:
         df_param_cd, _ = nwis.get_pmcodes(var)
@@ -91,7 +89,6 @@ def _get_usgs_output_info() -> pd.DataFrame:
 
 @functools.lru_cache(maxsize=None)
 def _get_usgs_output_codes() -> Dict[str, pd.DataFrame]:
-
     output_codes = {}
     df_param_info = _get_usgs_output_info()
     for var in USGS_OUTPUT_OF_INTEREST:
@@ -101,7 +98,6 @@ def _get_usgs_output_codes() -> Dict[str, pd.DataFrame]:
 
 
 def _get_usgs_stations_by_output(output: List[str], **kwargs: Dict[str, Any]) -> pd.DataFrame:
-
     # NOTE: Why do we have so many combinations in df for a single station?
     sites, sites_md = nwis.get_info(seriesCatalogOutput=True, parameterCd=output, **kwargs)
     # NOTE metadata object cannot be pickled due to lambda func
@@ -109,7 +105,6 @@ def _get_usgs_stations_by_output(output: List[str], **kwargs: Dict[str, Any]) ->
 
 
 def normalize_usgs_stations(df: pd.DataFrame) -> gpd.GeoDataFrame:
-
     if df.empty:
         return gpd.GeoDataFrame()
 
@@ -231,7 +226,6 @@ def get_usgs_stations(
 
 
 def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
-
     # TODO: Does truncate seconds make sense for USGS?
 
     if df.empty:
