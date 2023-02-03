@@ -43,14 +43,14 @@ def test_get_usgs_stations():
 @pytest.mark.parametrize(
     "truncate_seconds,no_records",
     [
-        pytest.param(True, 1022, id="truncate_seconds=True"),
-        pytest.param(False, 1022, id="truncate_seconds=False"),
+        pytest.param(True, 4, id="truncate_seconds=True"),
+        pytest.param(False, 4, id="truncate_seconds=False"),
     ],
 )
 def test_get_usgs_station_data(truncate_seconds, no_records):
     """Truncate_seconds=False returns more datapoints compared to `=True`"""
     df = usgs.get_usgs_station_data(
-        usgs_code="301112085500201",
+        usgs_code="15484000",
         endtime=datetime.date(2022, 10, 1),
         period=1,
         truncate_seconds=truncate_seconds,
@@ -60,20 +60,17 @@ def test_get_usgs_station_data(truncate_seconds, no_records):
 
 _USGS_METADATA_MINIMAL = pd.DataFrame.from_dict(
     {
-        "agency_cd": {0: "USGS", 1: "USGS"},
-        "alt_datum_cd": {0: "NAVD88", 1: "NAVD88"},
-        "alt_va": {0: 0.0, 1: 0.0},
-        "begin_date": {0: "2022-09-26", 1: "2022-09-27"},
-        "dec_coord_datum_cd": {0: "NAD83", 1: "NAD83"},
-        "dec_lat_va": {0: 27.97775, 1: 30.18655556},
-        "dec_long_va": {0: -82.8322778, 1: -85.8339722},
-        "end_date": {0: "2022-10-03", 1: "2022-10-04"},
-        "parm_cd": {0: "62622", 1: "62622"},
-        "site_no": {0: "275840082495601", 1: "301112085500201"},
-        "station_nm": {
-            0: "GULF OF MEXICO AT CLEARWATER BEACH, FL",
-            1: "GULF OF MEXICO NEAR PANAMA CITY BEACH, FL",
-        },
+        "agency_cd": {174: "USGS", 864: "USGS"},
+        "site_no": {174: "15056500", 864: "15484000"},
+        "station_nm": {174: "CHILKAT R NR KLUKWAN AK", 864: "SALCHA R NR SALCHAKET AK"},
+        "dec_lat_va": {174: 59.41494719, 864: 64.47152778},
+        "dec_long_va": {174: -135.9310198, 864: -146.9280556},
+        "dec_coord_datum_cd": {174: "NAD83", 864: "NAD83"},
+        "alt_va": {174: 0.1, 864: 637.24},
+        "alt_datum_cd": {174: "NAVD88", 864: "NAVD88"},
+        "parm_cd": {174: "00060", 864: "00065"},
+        "begin_date": {174: "1959-07-01", 864: "2007-10-01"},
+        "end_date": {174: "2023-02-02", 864: "2023-02-03"},
     }
 )
 
@@ -98,7 +95,7 @@ def test_get_usgs_data(truncate_seconds):
     )
     assert isinstance(ds, xr.Dataset)
     # TODO: Check if truncate_seconds does work
-    assert len(ds.datetime) == 248
+    assert len(ds.datetime) == 27
     assert len(ds.site_no) == len(usgs_metadata)
     # Check that usgs_code, lon, lat, country and location are not modified
     assert set(ds.site_no.values).issubset(usgs_metadata.site_no.values)
@@ -107,5 +104,5 @@ def test_get_usgs_data(truncate_seconds):
     # assert set(ds.country.values).issubset(usgs_metadata.country.values)
     # assert set(ds.location.values).issubset(usgs_metadata.location.values)
     # Check that actual data has been retrieved
-    assert ds.sel(site_no="275840082495601").value.mean() == pytest.approx(-0.09816061, rel=1e-3)
-    assert ds.sel(site_no="301112085500201").value.mean() == pytest.approx(-0.23919962, rel=1e-3)
+    assert ds.sel(site_no="15056500").value.mean() == pytest.approx(109.94, rel=1e-3)
+    assert ds.sel(site_no="15484000").value.mean() == pytest.approx(637.84, rel=1e-3)
