@@ -110,6 +110,11 @@ def _get_usgs_stations_by_output(output: List[str], **kwargs: Dict[str, Any]) ->
 
 def normalize_usgs_stations(df: pd.DataFrame) -> gpd.GeoDataFrame:
 
+    if df.empty:
+        return gpd.GeoDataFrame()
+
+    df.end_date = pd.to_datetime(df.end_date, errors="coerce")
+    df.begin_date = pd.to_datetime(df.begin_date, errors="coerce")
     gdf = gpd.GeoDataFrame(
         data=df,
         geometry=gpd.points_from_xy(df.dec_long_va, df.dec_lat_va, crs="EPSG:4326"),
@@ -140,7 +145,7 @@ def _get_all_usgs_stations() -> gpd.GeoDataFrame:
     usgs_stations = functools.reduce(
         # functools.partial(pd.merge, how='outer'),
         lambda i, j: pd.concat([i, j], ignore_index=True),
-        (r.result for r in usgs_stations_results if not r.result.empty),
+        (r.result for r in usgs_stations_results if r.result is not None and not r.result.empty),
     )
     usgs_stations = normalize_usgs_stations(usgs_stations)
 
@@ -172,7 +177,7 @@ def _get_usgs_stations_by_region(**region_json: Any) -> gpd.GeoDataFrame:
     usgs_stations = functools.reduce(
         # functools.partial(pd.merge, how='outer'),
         lambda i, j: pd.concat([i, j], ignore_index=True),
-        (r.result for r in usgs_stations_results if not r.result.empty),
+        (r.result for r in usgs_stations_results if r.result is not None and not r.result.empty),
     )
     usgs_stations = normalize_usgs_stations(usgs_stations)
 
@@ -228,6 +233,9 @@ def get_usgs_stations(
 def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.DataFrame:
 
     # TODO: Does truncate seconds make sense for USGS?
+
+    if df.empty:
+        return df
 
     df = df.reset_index()
     df = df.melt(id_vars=["datetime", "site_no"], var_name="output_id")

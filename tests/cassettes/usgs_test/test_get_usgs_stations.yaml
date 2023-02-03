@@ -1,0 +1,193 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.2
+    method: GET
+    uri: https://help.waterdata.usgs.gov/code/parameter_cd_nm_query?fmt=rdb&parm_nm_cd=%25elevation%25
+  response:
+    body:
+      string: "#\n# National Water Information System\n# 2023/02/03\n#\n#\n# Date
+        Retrieved: USGS Water Data for the Nation Help System\n#\nparameter_cd\tgroup\tparm_nm\tepa_equivalence\tresult_statistical_basis\tresult_time_basis\tresult_weight_basis\tresult_particle_size_basis\tresult_sample_fraction\tresult_temperature_basis\tCASRN\tSRSName\tparm_unit\r\n5s\t11s\t104s\t26s\t0s\t0s\t0s\t0s\t0s\t0s\t1s\t1s\t2s\r\n00062\tPhysical\tElevation
+        of reservoir water surface above datum, feet\tAgree\t\t\t\t\t\t\t \t \tft\r\n30211\tPhysical\tElevation
+        above NGVD 1929, meters\tAgree\t\t\t\t\t\t\t \t \tm\r\n62600\tPhysical\tWater
+        level elevation above NGVD 1929, corrected for barometric pressure, feet\tUSGS
+        use and no use by EPA\t\t\t\t\t\t\t \t \tft\r\n62601\tPhysical\tWater level
+        elevation above NGVD 1929, inclined (non-vertical) well, feet\tUSGS use and
+        no use by EPA\t\t\t\t\t\t\t \t \tft\r\n62614\tPhysical\tLake or reservoir
+        water surface elevation above NGVD 1929, feet\tUSGS use and no use by EPA\t\t\t\t\t\t\t
+        \t \tft\r\n62615\tPhysical\tLake or reservoir water surface elevation above
+        NAVD 1988, feet\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tft\r\n62616\tPhysical\tLake
+        or reservoir water surface elevation above NGVD 1929, meters\tUSGS use and
+        no use by EPA\t\t\t\t\t\t\t \t \tm\r\n62617\tPhysical\tLake or reservoir water
+        surface elevation above NAVD 1988, meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t
+        \t \tm\r\n62619\tPhysical\tEstuary or ocean water surface elevation above
+        NGVD 1929, feet\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tft\r\n62620\tPhysical\tEstuary
+        or ocean water surface elevation above NAVD 1988, feet\tUSGS use and no use
+        by EPA\t\t\t\t\t\t\t \t \tft\r\n62621\tPhysical\tEstuary or ocean water surface
+        elevation above NGVD 1929, meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t
+        \t \tm\r\n62622\tPhysical\tEstuary or ocean water surface elevation above
+        NAVD 1988, meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tm\r\n63158\tPhysical\tStream
+        water level elevation above NGVD 1929, in feet\tUSGS use and no use by EPA\t\t\t\t\t\t\t
+        \t \tft\r\n63159\tPhysical\tStream water level elevation above NGVD 1929,
+        in meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tm\r\n63160\tPhysical\tStream
+        water level elevation above NAVD 1988, in feet\tUSGS use and no use by EPA\t\t\t\t\t\t\t
+        \t \tft\r\n63161\tPhysical\tStream water level elevation above NAVD 1988,
+        in meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tm\r\n72020\tPhysical\tElevation
+        above NGVD 1929, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72106\tPhysical\tElevation
+        of sample, feet\tAgree\t\t\t\t\t\t\t \t \tft\r\n72214\tPhysical\tLake or reservoir
+        elevation above International Great Lakes Datum (IGLD), feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72215\tPhysical\tLake or reservoir elevation above International
+        Great Lakes Datum (IGLD), meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72250\tPhysical\tMarsh
+        mat (floating vegetation) elevation above NAVD 1988, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72264\tPhysical\tLake or reservoir elevation above New York State
+        Barge Canal Datum (NYBCD), feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72265\tPhysical\tLake
+        or reservoir elevation above New York State Barge Canal Datum (NYBCD), meters\tNot
+        checked\t\t\t\t\t\t\t \t \tm\r\n72274\tPhysical\tScour hole bottom elevation
+        above NGVD 1929, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72275\tPhysical\tLake
+        or reservoir elevation above United States Bureau of Reclamation Klamath Basin
+        (USBRKB) Datum, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72277\tInformation\tDatum
+        offset, elevation of water leveling point in reference to established datum,
+        feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72279\tPhysical\tTidal elevation,
+        NOS-averaged, NAVD88, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72292\tPhysical\tWater
+        level elevation above NAVD 1988, corrected for barometric pressure, feet\tNot
+        checked\t\t\t\t\t\t\t \t \tft\r\n72293\tPhysical\tWater level elevation above
+        gage datum, corrected for barometric pressure, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72330\tPhysical\tStreambed elevation at measurement point, NAVD88,
+        feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72333\tPhysical\tReach averaged
+        water-surface elevation, meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72335\tInformation\tElevation
+        above NAVD 1988, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72336\tInformation\tElevation
+        above NAVD 1988, meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72346\tPhysical\tEstuary
+        or ocean water surface elevation above Virgin Islands Vertical Datum of 2009,
+        VIVD09, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72347\tPhysical\tEstuary
+        or ocean water surface elevation above Virgin Islands Vertical Datum of 2009,
+        VIVD09, meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72361\tPhysical\tStream
+        water level elevation above local mean sea level (LMSL), feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72362\tPhysical\tStream water level elevation above local mean
+        sea level (LMSL), meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72363\tPhysical\tStream
+        water level elevation above Guam Vertical Datum of 2004, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72364\tPhysical\tStream water level elevation above Guam Vertical
+        Datum of 2004, meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72365\tPhysical\tStream
+        water level elevation, above Puerto Rico Datum of 2002, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72366\tPhysical\tStream water level elevation, above Puerto Rico
+        Datum of 2002, meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72367\tPhysical\tStream
+        water level elevation above Virgin Islands Vertical Datum of 2009, feet\tNot
+        checked\t\t\t\t\t\t\t \t \tft\r\n72368\tPhysical\tStream water level elevation
+        above Virgin Islands Vertical Datum of 2009, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72369\tPhysical\tTidal stage elevation, NAVD88, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72370\tPhysical\tTidal stage elevation, NAVD88, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72371\tPhysical\tTidal stage elevation, above Puerto Rico Datum
+        of 2002, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72372\tPhysical\tTidal
+        stage elevation, above Puerto Rico Datum of 2002, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72373\tPhysical\tTidal stage elevation above Virgin Islands Vertical
+        Datum of 2009, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72374\tPhysical\tTidal
+        stage elevation above Virgin Islands Vertical Datum of 2009, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72375\tPhysical\tLake or reservoir elevation above local mean sea
+        level (LMSL), feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72376\tPhysical\tLake
+        or reservoir elevation above local mean sea level (LMSL), meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72377\tPhysical\tLake or reservoir elevation above Guam Vertical
+        Datum of 2004, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72378\tPhysical\tLake
+        or reservoir elevation above Guam Vertical Datum of 2004, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72379\tPhysical\tLake or reservoir elevation, above Puerto Rico
+        Datum of 2002, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72380\tPhysical\tLake
+        or reservoir elevation, above Puerto Rico Datum of 2002, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72381\tPhysical\tLake or reservoir elevation above Virgin Islands
+        Vertical Datum of 2009, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72382\tPhysical\tLake
+        or reservoir elevation above Virgin Islands Vertical Datum of 2009, meters\tNot
+        checked\t\t\t\t\t\t\t \t \tm\r\n72383\tPhysical\tEstuary or ocean water surface
+        elevation above local mean sea level (LMSL), feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n72384\tPhysical\tEstuary or ocean water surface elevation above
+        local mean sea level (LMSL), meters\tNot checked\t\t\t\t\t\t\t \t \tm\r\n72385\tPhysical\tEstuary
+        or ocean water surface elevation above Guam Vertical Datum of 2004, feet\tNot
+        checked\t\t\t\t\t\t\t \t \tft\r\n72386\tPhysical\tEstuary or ocean water surface
+        elevation above Guam Vertical Datum of 2004, meters\tNot checked\t\t\t\t\t\t\t
+        \t \tm\r\n72387\tPhysical\tEstuary or ocean water surface elevation, above
+        Puerto Rico Datum of 2002, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n72388\tPhysical\tEstuary
+        or ocean water surface elevation, above Puerto Rico Datum of 2002, meters\tNot
+        checked\t\t\t\t\t\t\t \t \tm\r\n72397\tPhysical\tReach averaged water-surface
+        elevation, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n99020\tPhysical\tElevation
+        above NGVD 1929, meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tm\r\n99064\tPhysical\tWater
+        surface elevation difference between two locations, feet\tNot checked\t\t\t\t\t\t\t
+        \t \tft\r\n99067\tPhysical\tDifference between observed and predicted water
+        surface elevation, feet\tNot checked\t\t\t\t\t\t\t \t \tft\r\n99225\tInformation\tDatum
+        offset, elevation of station's Aquatrak leveling point in reference to established
+        datum, meters\tUSGS use and no use by EPA\t\t\t\t\t\t\t \t \tm\r\n"
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Disposition:
+      - attachment; filename="parameter_cd_nm_query.txt"
+      Content-Type:
+      - text/plain; charset=UTF-8
+      Date:
+      - Fri, 03 Feb 2023 17:44:22 GMT
+      Keep-Alive:
+      - timeout=15, max=100
+      Server:
+      - Zope/(2.13.22, python 2.7.10, linux2) ZServer/1.1
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - deny
+      X-UA-Compatible:
+      - IE=edge,chrome=1
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.2
+    method: GET
+    uri: https://help.waterdata.usgs.gov/code/parameter_cd_nm_query?fmt=rdb&parm_nm_cd=%25flow+rate%25
+  response:
+    body:
+      string: "#\n# National Water Information System\n# 2023/02/03\n#\n#\n# Date
+        Retrieved: USGS Water Data for the Nation Help System\n#\nparameter_cd\tgroup\tparm_nm\tepa_equivalence\tresult_statistical_basis\tresult_time_basis\tresult_weight_basis\tresult_particle_size_basis\tresult_sample_fraction\tresult_temperature_basis\tCASRN\tSRSName\tparm_unit\r\n5s\t8s\t49s\t11s\t0s\t0s\t0s\t0s\t0s\t0s\t1s\t24s\t7s\r\n00056\tPhysical\tFlow
+        rate of well, gallons per day\tNot checked\t\t\t\t\t\t\t \t \tgal/day\r\n00058\tPhysical\tFlow
+        rate of well, gallons per minute\tNot agree\t\t\t\t\t\t\t \t \tgal/min\r\n00059\tPhysical\tFlow
+        rate, instantaneous, gallons per minute\tAgree\t\t\t\t\t\t\t \tFlow rate,
+        instantaneous\tgal/min\r\n50051\tPhysical\tFlow rate, instantaneous, million
+        gallons per day\tAgree\t\t\t\t\t\t\t \tFlow rate, instantaneous\tmgd\r\n74072\tPhysical\tFlow
+        rate, liters per second\tAgree\t\t\t\t\t\t\t \t \tl/sec\r\n"
+    headers:
+      Connection:
+      - Keep-Alive
+      Content-Disposition:
+      - attachment; filename="parameter_cd_nm_query.txt"
+      Content-Type:
+      - text/plain; charset=UTF-8
+      Date:
+      - Fri, 03 Feb 2023 17:44:22 GMT
+      Keep-Alive:
+      - timeout=15, max=100
+      Server:
+      - Zope/(2.13.22, python 2.7.10, linux2) ZServer/1.1
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      X-Frame-Options:
+      - deny
+      X-UA-Compatible:
+      - IE=edge,chrome=1
+    status:
+      code: 200
+      message: OK
+version: 1

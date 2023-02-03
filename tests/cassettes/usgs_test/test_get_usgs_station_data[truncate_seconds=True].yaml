@@ -1,0 +1,168 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.2
+    method: GET
+    uri: https://waterservices.usgs.gov/nwis/iv?format=json&startDT=2022-09-30&endDT=2022-10-01&sites=15484000
+  response:
+    body:
+      string: ''
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - Keep-Alive
+      Content-Length:
+      - '0'
+      Date:
+      - Fri, 03 Feb 2023 17:44:44 GMT
+      Expires:
+      - Fri, 03 Feb 2023 17:59:45 GMT
+      Keep-Alive:
+      - timeout=5, max=100
+      Location:
+      - https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&startDT=2022-09-30&endDT=2022-10-01&sites=15484000
+      Server:
+      - Apache-Coyote/1.1
+      Strict-Transport-Security:
+      - max-age=31536000
+      Vary:
+      - Accept-Encoding
+      X-Frame-Options:
+      - deny
+      X-UA-Compatible:
+      - IE=edge,chrome=1
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, br
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.28.2
+    method: GET
+    uri: https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&startDT=2022-09-30&endDT=2022-10-01&sites=15484000
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAO2dbW/bRhpF/wrBXeSTLJPUu4pg4Y2DbNoga0ROt9vAKGhpbDOlSVeknHoD//cd
+        6oWW43iuLnEX8AIuCtSWyaNHhyMO7ww5/epn8aXxx35WhOMyuTQTM09M8cEUV3lWmOObK+O3/JmZ
+        pvHczJa/jv18ft6eLuKLIml/iUszv0zbx4/tWkzz5T6f4+v4z/afdtPTJJu1fzz45e+vU3NpsvKv
+        b9L8NE4nyw1b/nWcLuwOX/0/FmZ+8zY7y+tfPn54Z0kXZXk13t/PviTF6u0LM79OpqZoL4rzon2e
+        Xy//tp9c75/l88u4fPm5yLMXRRnPy8Pjl1EQRXvBaK8TvDDZbPNCGOwF4YsiKU3xMux1h90gCGwx
+        07l9ZZ7EVQlpPo3LJM+O4nl8aev4dPDu3Xiz7cmycrvlaWo2G9i/21crqetXvvqn5jzJDm3RlS+7
+        yV0xx0EwXv7bXr1zVds32y1rPI46497I/rvc7rblX1VsY6v0x59O7O9ZXto9Pn3diHxYZ5mUafWH
+        syS1u42XH9qStva4zGfm5YeD929etzz7c3KWmNkkyabmZbZI0xMvyeyOduuXX9++P3794eeDd58e
+        +SR7Qdf+tP9I/b+e3D6spxL2Ic7Ozb2a7Ee8yGdvZ8XL6vN852NsNri3l33fzl5gC+sch4Nxtzvu
+        9tq93vDXrd3nxratwraMezsOov7IRL1gL+6YeC8MzWwvPgvive50NhqeDWdnQRg+hHzz7kfz/Dop
+        bJOJU28Wl7Fnv0NesTj9bKalV+be3Kz+3Pbe5NXv65a9bNTV9t806AuTXu3/7WoLatu3PT4WmmSr
+        pl7BtsqaJYX94lqf83t1ZfHsy5dgu/7qK1RtVDWgu7PAshkV+WI+NZvvYdVY3q/OGJODd6/+ceB9
+        8N5/8FY///T62Dv4qfrS261e2TZ0rx1ufa0yU37J57/bF9//6+3EvhCfm2x6s9rF/zh5M7GlrCr5
+        Nc/qN5+Zs3iRlsfrl6uX/mP/+8+zs8KUdkfb/sZLfvXqwelp5XfppPoy/jSpjrA/i2/S5PyinMTX
+        SXZeOFhDB2vZWpYf82NhisOHTH9czhfGbnNu8nfrE0f1HvbX8+3fi7m17L8+mrwZdztR375fav9W
+        LioR/W67Owh70WAwtC/n2fn69b2w22+PomHQ6/VvW8vzUjqxpfzy7/ungJNVhauT9uY32yavzLy8
+        uXdorJrWpiPY7PLqflsOR8Ew6AS9uw0vFtNvtgmiLUxpW/GDvwej4G6Tab7Iyptqm6rozdmzsrL5
+        +UEbss0n/G4DurYSThe2k7pZvzb+mCXlz9Vuxdap+e2hb08Bw2AQdKPWpj2tj9XJ3WbrFn5sLq2r
+        uFzMTctbfitb3ou/hIP+D6+2mIemsN3E1bptfG+fmTmfG1N4r0xaJIti08mte9ND+127NjNvWaz9
+        28IWXkmo/rv+RliA96pqcfnybYrqz/n6Ha2dtc+JVZ4UZTL1Nxuudw+CZV9xv2lkue1f4tWbjvdG
+        y3/awVYvdtdQ7NZ5MrOgjTr/dv0Riu2js3WcbMu1RfyxiNOq76ja+Cf/wD+pvn6o71t/8bbbDU8L
+        e0paR1pbV1hbKPUWSr2FUm+h1Fsk9RYBbx2S5vbG0tzeOFoHeGNpSm8dqbeO1FtX6q0r9daVeutK
+        vfWk3npSbz2pt57UW1/qrS/11pd66wNvEUUbAG8sze2Npbm9sTSlt6HU21DqbSj1NpR6G0m9jaTe
+        RlJvI6W3EOUFlib0FqK8wNKU3lBeYGlKbygvsDRhfxqivMDShP1pKM0LoTQvhCgvUDkrRHmBpQnz
+        aYjyQo+iobzA0tzeWJrbG0tTekN5gaW5vfVJmtsbS3N7G1A0lBdYmtsbS3N7Y2lKbygvsDSlN5QX
+        WJrbG9d6UV7gakN5ga1N6Q3lBY6G8gJLU7Y3lBdYmtBbhPICSxN6i1BeoFpvhPICVxvKC1xtKC+w
+        NKU3lBc4GsoLLE3pDeUFlia8fotQXmBpwuveCOUFlibxtrqnBs6fsjSJt5omyVk1TTIPuKaJ5k9r
+        miSf1jSlN9F4yJomGg+paZLxkJomGQ+paUpvovnTmiYZf6tpkvG3miYZt1zT0HgIS1N6Q+MhLM3t
+        LaRoaDyEpbm9sTS3N5am9IbGQwKS5vbG0tzeWJrbG0dD4yEsTekNjYewNJe3TntE0dzjITzN5Y2n
+        ubzxNKU393gIT1N6c4+H8DShNzB/ytOE3sD8KU9TenPnBZ4mPL/B+VOWJuwX4PwpSxNeh8D5U5Ym
+        vO6F86dcbdK8AOdPWZowZ8H5U6420f2WNU2YT+H8KUdDeYEac4DzpyxNOB4C5085GsoLLE3pDeUF
+        lqb0hvICS1N6Q3mBpSm9oflTlqb0huZPWZrSG5o/ZWlKb2j+lKUJvcH5U6qXgfOnLE3Yn8L5U46G
+        5hdYmtKb6H7Lmia87oXzpyxNeN0L509ZmnDcEs6fsjRhzoLzpyztgbeTrf396mnU+rf1c7AH2+9w
+        /7Hdg6vquXozWz5Sf7U4TZPVM9re3p53NM+npiiS7NyLs9nyqX3zxZvml1epKc2svU2tHjAO0PPJ
+        i+vf5pe//zad3dVc3rzKs3Kep+/MtUn95TO3qxUNlp9k9eP9kv3NFtV7hoN+r4KtntZf7Z+vn2Vf
+        PvodV9Wufp6arMjXTj6dVHutHyCuHryvV4qwSoPlOFGwPlLPCwE8LwTgP6GFALq97zUgdiGAsGu/
+        rmghgKO5mSZXSbk8Wi2vzMs4bXlJ5j+2CsBjO0wvTIPH/+0b3T6NZ/+tLf/2u8/+f3PyFZ7Xuvrz
+        2rLreD6vPZ/XnuJ5rS9Z4CQcDfB5bVLOTXx5luZfWt5ZWS1tMvphv3j0rHaYFNOLeH5uWt50cZpM
+        vTNjSs/a9gozzbMZf2Y7Kzv7xZM5uY0Gj5zc7o5PFHV2nKvYaWWTBjjXJXkDnOuavAHOFWZonDs9
+        N8BJ3bnzcwOc1J07QTfASd25M3QDnNSdO0U3wEnduXN0A5zUnXvmrQFO6s4999YAJ3Xnnn1rgJO6
+        c8+/NcBJ3bln4BrgpO7cc3ANcFJ37lm4BjipO/c8XAOc1J17Jq4Bzu0uYnFSd+7JOBrnno2jP6x7
+        Oq5BdW53dHVKd+AOvgY4ZbsD9/A1wEndoVxBVodyBY2TukO5gsShXEHjpO5QrqBxUncoV9A4qTuU
+        K2ic1B3KFTRO6g7lChondYdyBY2TukO5gsa53YUcDuUKGud2R+Pc7mic1B3KFTRO6g7lChondYdy
+        BY1zuguHLE7qDuUKEodyBY2TtjuUK2ic0h240y8KRyxO6Q7c69cAJ3WHcgWNk7pDuYLGOd2xDQXk
+        Ch4ndQdyBV+d1B3IFTzO3VfQOKk7kCt2xu20ckoDnMbdTmunNMBJ3YHzHY+TugPnOx4ndac63+20
+        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
+        o+4AAA==
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Cache-Control:
+      - max-age=900
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 03 Feb 2023 17:44:44 GMT
+      Expires:
+      - Fri, 03 Feb 2023 17:59:45 GMT
+      Keep-Alive:
+      - timeout=15, max=100
+      Server:
+      - Apache-Coyote/1.1
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-UA-Compatible:
+      - IE=edge,chrome=1
+    status:
+      code: 200
+      message: OK
+version: 1
