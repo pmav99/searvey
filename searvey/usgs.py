@@ -81,9 +81,7 @@ def _get_usgs_output_info() -> pd.DataFrame:
         df_param_cd = _filter_parameter_codes(df_param_cd)
         df_param_cd["output_cat"] = var
         output_info.append(df_param_cd)
-
-    df_param_info = functools.reduce(functools.partial(pd.merge, how="outer"), output_info)
-
+    df_param_info = pd.concat(output_info, axis="index", join="outer", ignore_index=True)
     return df_param_info
 
 
