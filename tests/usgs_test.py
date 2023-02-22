@@ -29,7 +29,6 @@ def test_get_usgs_stations_raises_when_both_region_and_bbox_specified():
     assert "`region` or the `BBox` corners, not both" in str(exc)
 
 
-@pytest.mark.vcr
 def test_get_usgs_stations():
     stations = usgs.get_usgs_stations()
     assert isinstance(stations, pd.DataFrame)
@@ -39,7 +38,6 @@ def test_get_usgs_stations():
     assert set(stations.columns).issuperset(usgs.USGS_STATIONS_COLUMN_NAMES)
 
 
-@pytest.mark.vcr
 @pytest.mark.parametrize(
     "truncate_seconds,no_records",
     [
