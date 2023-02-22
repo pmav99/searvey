@@ -282,7 +282,7 @@ def get_usgs_station_data(
     endtime: Union[str, datetime.date] = datetime.date.today(),
     period: float = 30,
     truncate_seconds: bool = True,
-    rate_limit: Optional[RateLimit] = None,
+    rate_limit: Optional[RateLimit] = RateLimit(),
 ) -> pd.DataFrame:
     """Retrieve the TimeSeries of a single USGS station.
 
