@@ -236,8 +236,8 @@ def normalize_usgs_station_data(df: pd.DataFrame, truncate_seconds: bool) -> pd.
     df["value"] = df.value.where(~df.output_id.str.contains("_cd"))
     df = df.dropna(subset=["value", "qualifier"], how="all")
 
-    df["code"] = df.output_id.transform(lambda i: i.split("_")[0])
-    df["option"] = df.output_id.transform(lambda i: "".join(i.removesuffix("_cd").split("_")[1:]))
+    df["code"] = df.output_id.str.split("_").str[0]
+    df["option"] = df.output_id.str.removesuffix("_cd").str.split("_").str[1:].str.join("")
     df["isqual"] = df.output_id.str.contains("_cd")
     df["output_id"] = df.output_id.str.removesuffix("_cd")
     df = df.set_index(list(USGS_DATA_MULTIIDX))
