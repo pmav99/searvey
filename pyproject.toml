@@ -41,6 +41,7 @@ pydantic = "*"
 requests = "*"
 Shapely = "*"
 tqdm = "*"
+typing-extensions = "*"
 xarray = "*"
 
 [tool.poetry.group.dev.dependencies]
