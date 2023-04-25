@@ -7,14 +7,14 @@ on:
       - master
     paths:
       - '**.py'
-      - '.github/workflows/test*.yml'
+      - '.github/workflows/*test*.yml'
       - 'pyproject.toml'
       - 'poetry.lock'
       - 'requirements/requirements*.txt'
   pull_request:
     paths:
       - '**.py'
-      - '.github/workflows/test*.yml'
+      - '.github/workflows/*test*.yml'
       - 'pyproject.toml'
       - 'poetry.lock'
       - 'requirements/requirements*.txt'
@@ -44,6 +44,7 @@ jobs:
       - run: python -m pip cache info
       - run: mypy searvey
       - run: make cov
+      - run: make exec_notebooks
       - uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
